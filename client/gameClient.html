@@ -1,0 +1,86 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script src="gameClient.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://kit.fontawesome.com/94b53c809b.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="jumbotron myX">
+        <a href="/client.html" style="position: relative;">
+          <button type="submit" class="btn-info btn-xs">
+            <i class="fas fa-long-arrow-alt-left"></i>
+            back
+          </button>
+        </a>
+        <br /><br />
+
+        <div class="fa-pull-right">
+          <div
+            class="card text-white bg-info mb-3"
+            style="max-width: 18rem; margin-left: auto"
+          >
+            <div class="card-header">Opponents <span id="players"></span></div>
+            <div class="card-body">
+              <p id="opps" class="card-text"> <p id="player-color"></p> </p>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <h1 class="page-header col-lg-6">Get ready!</h1>
+            <p class="col-lg-8">
+              After creating a server you should have recieved the server and
+              game id. Enter the information below to connect to the server! The
+              game will appear below, where you will be competing against your
+              opponents. Good luck!
+            </p>
+
+            <br /><br />
+            <div class="col-lg-10 inputDiv">
+              <input
+                type="text"
+                id="inputUrl"
+                placeholder="Server ID"
+                size="10"
+              />
+              <input
+                class="input-group-addon"
+                type="text"
+                id="inputID"
+                placeholder="Game ID"
+                size="10"
+              />
+              <input
+                class="input-group-addon"
+                type="text"
+                id="inputName"
+                placeholder="Name"
+                size="10"
+              />
+
+              <button onclick="establishConnection();" class="btn-info btn-md">
+                <i class="fas fa-wifi"></i>
+                Connect
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="jumbotron" style="background-color: white !important;" id="empty"></div>
+    <p id="errmsg"></p>
+  </body>
+</html>

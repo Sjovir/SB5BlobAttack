@@ -1,0 +1,48 @@
+/* #canvas {
+    width: 800px;
+    height: 350px;
+    border: 5px solid black;
+} */
+
+.jumbotron {
+  background-color: #2e2d88 !important;
+  color: white;
+  padding: 2rem 1rem !important;
+  font-size: 80%;
+}
+
+.card-body {
+  display: flex;
+  align-items: baseline;
+}
+canvas {
+    position: absolute;
+    background: #fff;
+    border: 1px solid #aaa;
+    /* border-radius: 5px; */
+    width: 72%;
+    height: 56%;
+    left: 14%;
+    right: 14%; 
+    top: 42%;
+    background-image: url(https://images.wallpaperscraft.com/image/nebula_glowing_space_131413_1280x720.jpg);
+}
+
+#player-color {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+}
+
+hr.style2 {
+  border-top: 3px outset white;
+}
+
+.myX {
+  width: 100%;
+  height: 40%;
+}
+
+.inputDiv {
+  top: -20%;
+}

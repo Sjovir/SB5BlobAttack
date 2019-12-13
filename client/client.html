@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script src="client.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://kit.fontawesome.com/94b53c809b.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <title>Blob Attack</title>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="jumbotron">
+        <i
+          class="fas fa-gamepad"
+          style="position: relative; font-size: 50px;"
+        ></i>
+
+        <h1>Blob Attack</h1>
+        <p>
+          This game takes inspiration from the game: Achtung Die Kurve.
+          The game is a kind of multi-player snake where a player wins when he/she is the last player alive. 
+          One does not grow by eating food as in the traditional snake game but grow by merely staying alive. 
+          There are no weapons or other things to kill the other players, instead each player kill the other players by 
+          trapping them so they either move out of bounds or into a snake path. In other words: Collision means death.
+        </p>
+      </div>
+    </div>
+    <div class="page-header">
+      <div class="row justify-content-center"></div>
+    </div>
+    <div class="container">
+      <div class="jumbotron">
+        <div class="row">
+          <div class="col-lg-6">
+            <h1>Instructions</h1>
+            <p>
+              Hello friends! come try our amazing and fun game with your best
+              buddies and challenge eachother. Just click on the
+              <i>Create a new server</i> button in order to create a server in
+              which your friends can join. Already have a server up an running?
+              Then simply click the <i>Join a game</i> button! Have fun!
+            </p>
+          </div>
+          <div class="col-lg-6">
+            <h2>Servers</h2>
+            <!-- <button onclick="newServer()">New Server</button> -->
+            <button onclick="newServer()" type="submit" class="btn-info btn-md">
+              <i class="fas fa-plus"></i>
+              Create a new server
+            </button>
+            <br />
+            <span><small id="serverPort"></small></span>
+
+            <br />
+            <hr class="style2" />
+            <br />
+
+            <h2>Join game</h2>
+            <a href="/gameClient.html">
+              <button type="submit" class="btn-info btn-md">
+                <i class="fas fa-play-circle"></i>
+                Join a game!
+              </button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <canvas id="canvas"></canvas> -->
+  </body>
+
+  <script
+    src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"
+  ></script>
+</html>

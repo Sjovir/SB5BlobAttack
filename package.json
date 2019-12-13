@@ -1,0 +1,29 @@
+{
+  "name": "blob_attack",
+  "version": "1.0.0",
+  "description": "A game where blobs form lines tries to fill out the canvas",
+  "main": "main.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "ws": "^7.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "No tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndersBensen/SB5TecProjectE19.git"
+  },
+  "keywords": [
+    "Game",
+    "Fun",
+    "Multiplayer"
+  ],
+  "author": "Anders, Loc & Erik",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AndersBensen/SB5TecProjectE19/issues"
+  },
+  "homepage": "https://github.com/AndersBensen/SB5TecProjectE19#readme"
+}
