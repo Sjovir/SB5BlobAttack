@@ -18,7 +18,7 @@ app.get('/new-server', (req, res) => {
 });
 
 app.get('/get-game', (req, res) => {
-    let arr = wsServer.getGame(req.query.port);
+    let arr = wsServer.getGame(req.query.port, req.query.name);
     res.json({gameInfo: arr});
 });
 

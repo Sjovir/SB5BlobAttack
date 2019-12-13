@@ -1,38 +1,51 @@
 let connected = false;
 let ws;
-let name;
+let playerKey;
 var canvas;
 
 let establishConnection = function() {
     if (connected) return;
     let port = document.getElementById("inputID").value;
-    getGame(port);
+    let name = document.getElementById("inputName").value;
+    getGame(port, name);
 };
 
-let initializeWebSocket = function(game) {
+let initializeWebSocket = function(response) {
+    // console.log(response);
+    
+    if (response === null)
+        return;
+    
+    if (response["error"] !== undefined) {
+        document.getElementById("errmsg").innerHTML = response["error"];
+        return;
+    }
+
+    playerKey = response["playerKey"];
+
+    console.log(playerKey);
+    if (playerKey !== "" && playerKey !== undefined) {
+        document.getElementById("errmsg").innerHTML = "";
+        setupWebSocket(playerKey);
+    } else {
+        document.getElementById("errmsg").innerHTML =
+            "Something went wrong when connecting to the game";
+    }
+};
+
+let setupWebSocket = (playerKey) => {
     let url = document.getElementById("inputUrl").value;
     let port = document.getElementById("inputID").value;
-    amountOfPlayers = game["players"].length;
-    // console.log("player amount: " + amountOfPlayers);
-    
-
-    if (amountOfPlayers > 3) {
-        document.getElementById("errmsg").innerHTML =
-        "The max amount of players: " +
-        amountOfPlayers +
-        ", has been reached, join a new game or make your own.";
-    } else {
-        ws = new WebSocket("ws://" + url + ":" + port);
+    ws = new WebSocket("ws://" + url + ":" + port);
         ws.onopen = () => {
-        name = document.getElementById("inputName").value;
-        ws.send(JSON.stringify({ name }));
-        connected = true;
-        console.log("connected");
-        createCanvas();
+            ws.send(JSON.stringify({ playerKey }));
+            connected = true;
+            console.log("connected");
+            createCanvas();
         };
         ws.onclose = () => {
-        connected = false;
-        console.log("disconnected");
+            connected = false;
+            console.log("disconnected");
         };
         ws.onerror = e => console.log("Something went wrong:", e);
 
@@ -47,23 +60,23 @@ let initializeWebSocket = function(game) {
                 console.log(winner.name + " has won the game");
             } else
                 console.log("Invalid message received");
-            
         };
-    }
-};
+}
 
 document.onkeydown = event => {
     if (!connected) return;
-
+    // console.log(playerKey + " || " + event.key);
+    
     switch (event.key) {
         case "ArrowLeft":
-        ws.send(JSON.stringify({ name, keydown: "LEFT" }));
-        break;
+            ws.send(JSON.stringify({ playerKey, keydown: "LEFT" }));
+            break;
         case "ArrowRight":
-        ws.send(JSON.stringify({ name, keydown: "RIGHT" }));
-        break;
+            ws.send(JSON.stringify({ playerKey, keydown: "RIGHT" }));
+            break;
         case " ":
-        ws.send(JSON.stringify({ name, keydown: "SPACE" }));
+            ws.send(JSON.stringify({ playerKey, keydown: "SPACE" }));
+            break;
         default:
         // console.log("Not a valid key");
     }
@@ -74,11 +87,11 @@ document.onkeyup = event => {
 
     switch (event.key) {
         case "ArrowLeft":
-        ws.send(JSON.stringify({ name, keyup: "LEFT" }));
-        break;
+            ws.send(JSON.stringify({ playerKey, keyup: "LEFT" }));
+            break;
         case "ArrowRight":
-        ws.send(JSON.stringify({ name, keyup: "RIGHT" }));
-        break;
+            ws.send(JSON.stringify({ playerKey, keyup: "RIGHT" }));
+            break;
         default:
         // console.log("Not a valid key");
     }
@@ -128,7 +141,7 @@ let updatePlayerInfo = playerData => {
     });
 }
 
-let getGame = function(port) {
+let getGame = function(port, name) {
     let xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
@@ -139,6 +152,6 @@ let getGame = function(port) {
         }
         }
     };
-    xmlHttp.open("GET", "/get-game?port=" + port, true); // true for asynchronous
+    xmlHttp.open("GET", "/get-game?port=" + port + "&name=" + name, true); // true for asynchronous
     xmlHttp.send();
 };

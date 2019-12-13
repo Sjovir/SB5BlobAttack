@@ -7,13 +7,13 @@ exports.servers = servers = [];
 let clientUpdate = (wsServer, data) => {
     data = JSON.parse(data);
     // console.log(data);
-    if (data.name !== undefined) {
+    if (data.playerKey !== undefined) {
         if (data.keydown !== undefined) {
-            wsServer.game.playerPressKey(data.name, data.keydown);
+            wsServer.game.playerPressKey(data.playerKey, data.keydown);
         } else if(data.keyup !== undefined) {
-            wsServer.game.playerReleaseKey(data.name, data.keyup);
+            wsServer.game.playerReleaseKey(data.playerKey, data.keyup);
         } else {
-            wsServer.game.addPlayer(data.name);
+            wsServer.game.addPlayer(data.playerKey);
         }
     }
 }
@@ -55,11 +55,18 @@ exports.newServer = function() {
     return port;
 }
 
-exports.getGame = function(gamePort) {
+exports.getGame = function(gamePort, playerName) {
     for(let i = 0; i < servers.length; i++) {
         let server = servers[i];
-        if (gamePort == server.options.port){
-            return this.servers[i]['game'];
+        if (gamePort == server.options.port) {
+            let game = this.servers[i]['game'];
+            
+            if (game.players.find(player => player.name === playerName) !== undefined) {
+                let error = "The game is full. No more players allowed";
+                return { error };
+            }
+            
+            return {game, playerKey: playerName};
         }
     } 
     return null;
