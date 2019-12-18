@@ -24,7 +24,7 @@ exports.Game = class Game {
         console.log("Game startet on port " + this.port);
     }
 
-    addPlayer (name) {
+    addPlayer (name, playerKey) {
         if (!this.validatePlayer(name))
             return false;
 
@@ -36,19 +36,19 @@ exports.Game = class Game {
 
         let color = getRandomColor(this.players);
 
-        this.players.push(new Player(name, startPosition.x, startPosition.y, 
+        this.players.push(new Player(name, playerKey, startPosition.x, startPosition.y, 
             speed, angleSpeed, angle, size, color, FRAME_RATE));
         
-
-        this.sendDataMethod(this.port, {type: "UPDATE", players: this.players});
+        
+        this.dispatchUpdate();
 
         console.log("Added " + this.players[this.players.length - 1].name);
         
         return true;
     }
 
-    playerPressKey (playerName, key) {
-        let player = getPlayer(playerName, this.players);
+    playerPressKey (playerKey, key) {
+        let player = getPlayer(playerKey);
         
         if (key === "SPACE") {
             if (this.winner === undefined)
@@ -60,8 +60,8 @@ exports.Game = class Game {
         }
     }
 
-    playerReleaseKey (playerName, key) {
-        let player = getPlayer(playerName, this.players);
+    playerReleaseKey (playerKey, key) {
+        let player = this.getPlayer(playerKey);
         
         if (player !== null) {
             player.changeDirection(false, key);
@@ -81,7 +81,7 @@ exports.Game = class Game {
     
         this.checkCollision(this.players);
 
-        this.sendDataMethod(this.port, {type: "UPDATE", players: this.players});
+        this.dispatchUpdate();
     }
 
     validatePlayer (name, color) {
@@ -114,7 +114,7 @@ exports.Game = class Game {
         let playersAlive = getPlayersAlive(this.players);
         if (playersAlive.length === 1) { // End game
             this.winner = playersAlive.shift();
-            this.sendDataMethod(this.port, {type: "END", winner: this.winner});
+            this.sendDataMethod(this.port, {type: "END", winner: this.winner.getInfo()});
             console.log("Game (" + this.port + ") ended");
             return true;
         } else
@@ -179,6 +179,25 @@ exports.Game = class Game {
         console.log(player.name + " died x: " + player.x + " y: " + player.y);
     }
 
+    dispatchUpdate() {
+        let gameInfo = [];
+        this.players.forEach(player => {
+            gameInfo.push(player.getInfo());
+        });
+        
+        this.sendDataMethod(this.port, {type: "UPDATE", players: gameInfo});
+    }
+
+    getPlayer (playerKey) {
+        let player = null;
+        this.players.forEach(p => {
+            if (p.playerKey === playerKey)
+                player = p;
+        });
+    
+        return player;
+    }
+
     getGameWidth () { return WIDTH;}
     getGameHeight () { return HEIGHT;}
 }
@@ -220,16 +239,6 @@ let getRandomColor = (players) => {
     } while (color === undefined)
 
     return color;
-}
-
-let getPlayer = (playerName, players) => {
-    let player = null;
-    players.forEach(p => {
-        if (p.name === playerName)
-            player = p;
-    });
-
-    return player;
 }
 
 let getPlayersAlive = (players) => {

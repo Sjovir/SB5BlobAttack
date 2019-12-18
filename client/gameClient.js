@@ -10,12 +10,12 @@ let establishConnection = function() {
     getGame(port, name);
 };
 
-let initializeWebSocket = function(response) {
+let initializeWebSocket = function(name, response) {
     // console.log(response);
-    
+
     if (response === null)
         return;
-    
+
     if (response["error"] !== undefined) {
         document.getElementById("errmsg").innerHTML = response["error"];
         return;
@@ -26,19 +26,19 @@ let initializeWebSocket = function(response) {
     // console.log(playerKey);
     if (playerKey !== "" && playerKey !== undefined) {
         document.getElementById("errmsg").innerHTML = "";
-        setupWebSocket(playerKey);
+        setupWebSocket(name, playerKey);
     } else {
         document.getElementById("errmsg").innerHTML =
             "Something went wrong when connecting to the game";
     }
 };
 
-let setupWebSocket = (playerKey) => {
+let setupWebSocket = (name, playerKey) => {
     let url = document.getElementById("inputUrl").value;
     let port = document.getElementById("inputID").value;
     ws = new WebSocket("wss://" + url + ":" + port);
         ws.onopen = () => {
-            ws.send(JSON.stringify({ playerKey }));
+            ws.send(JSON.stringify({ name, playerKey }));
             connected = true;
             console.log("connected");
             createCanvas();
@@ -66,7 +66,7 @@ let setupWebSocket = (playerKey) => {
 document.onkeydown = event => {
     if (!connected) return;
     // console.log(playerKey + " || " + event.key);
-    
+
     switch (event.key) {
         case "ArrowLeft":
             ws.send(JSON.stringify({ playerKey, keydown: "LEFT" }));
@@ -106,25 +106,28 @@ let createCanvas = () => {
     canvas.context.shadowColor = "black";
     document.body.insertBefore(canvas, document.getElementById("empty"));
 
-    canvas.clear = () => {
-        canvas.context.clearRect(0, 0, canvas.width, canvas.height); // clear canvas in order to update current posisitons
-    };
+    // canvas.clear = () => {
+    //     canvas.context.clearRect(0, 0, canvas.width, canvas.height); // clear canvas in order to update current posisitons
+    // };
     // console.log(canvas);
 };
 
 let updateCanvas = playerData => {
-    canvas.clear();
+    // canvas.clear();
 
     playerData.forEach(player => {
         let ctx = canvas.context;
-        let points = player.positions;
+        // let points = player.positions;
         ctx.fillStyle = player.color;
 
-        points.forEach(point => {
         ctx.beginPath();
-        ctx.arc(point.x, point.y, player.size / 2, 0, 2 * Math.PI);
+        ctx.arc(player.x, player.y, player.size / 2, 0, 2 * Math.PI);
         ctx.fill();
-        });
+        // points.forEach(point => {
+        // ctx.beginPath();
+        // ctx.arc(point.x, point.y, player.size / 2, 0, 2 * Math.PI);
+        // ctx.fill();
+        // });
     });
 };
 
@@ -148,7 +151,7 @@ let getGame = function(port, name) {
         let gameArr = [];
         gameArr = JSON.parse(xmlHttp.responseText).gameInfo;
         if (gameArr !== undefined) {
-            initializeWebSocket(gameArr);
+            initializeWebSocket(name, gameArr);
         }
         }
     };

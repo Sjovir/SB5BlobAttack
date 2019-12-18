@@ -1,8 +1,9 @@
 var exports = module.exports = {};
 
 exports.Player = class Player {
-    constructor (name, x, y, speed, angleSpeed, angle, size, color, framerate) {
+    constructor (name, playerKey, x, y, speed, angleSpeed, angle, size, color, framerate) {
         this.name = name;
+        this.playerKey = playerKey;
         this.x = x;
         this.y = y;
         this.speed = speed;
@@ -67,6 +68,9 @@ exports.Player = class Player {
         }
     }
 
+    getInfo () {
+        return { name: this.name, x: this.x, y: this.y, color: this.color, size: this.size };
+    }
 }
 
 let getRandomActivationTime = (framerate) => {

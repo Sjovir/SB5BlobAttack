@@ -15,14 +15,15 @@ let clientUpdate = (wsServer, data) => {
     data = JSON.parse(data);
     // console.log(data);
     if (data.playerKey !== undefined) {
-        let name = entities.encode(data.playerKey)
+        let name = entities.encode(data.name);
+        let playerKey = data.playerKey;
         // console.log(name);
         if (data.keydown !== undefined) {
-            wsServer.game.playerPressKey(name, data.keydown);
+            wsServer.game.playerPressKey(playerKey, data.keydown);
         } else if(data.keyup !== undefined) {
-            wsServer.game.playerReleaseKey(name, data.keyup);
+            wsServer.game.playerReleaseKey(playerKey, data.keyup);
         } else {;
-            wsServer.game.addPlayer(name);
+            wsServer.game.addPlayer(name, playerKey);
         }
     }
 }
@@ -52,21 +53,47 @@ exports.newServer = function() {
         cert: readFileSync('./ssl/public.cert')
     }, app);
 
+    var webSockOpts=
+    {port         :port
+    ,verifyClient : function (info, callback) {
+        var question=null//url.parse(info.req.url, true, true);
+        let origin = info.origin
+        console.log(info);
+        
+        if (origin === "https://localhost:8000") {
+           status= true; // I'm happy
+           code  = 400;  // everything OK
+           msg   = '';   // nothing to add
+        } else {
+           status= false; // I'm noy happy
+           code  = 404;  //  key is invalid
+           msg   = 'Unauthorized cookie key';
+        }
+        callback (status,code,msg);
+      }
+    };
+    // let wsServer = new Server(webSockOpts);
     // let wsServer = new Server({port: port});
-    // let wsServer = new Server({ server: httpsServer});
-    var WebSocketServer = require('websocket').server;
-    let wsServer = new WebSocketServer({ httpServer: httpsServer });
+    let wsServer = new Server({ server: httpsServer});
+    // var WebSocketServer = require('websocket').server;
+    // let wsServer = new WebSocketServer({ httpServer: httpsServer });
     servers.push(wsServer);
 
     wsServer.on('connection', (ws) => {
+        // console.log(ws);
+        
         ws.on('close', () => console.log('Closing connection..'));
 
         ws.on('message', (data) => {
             clientUpdate(wsServer, data);
         });
-        ws.on('keydown', (data) => {
-            console.log(data);
+        ws.on('request', (request) => {
+            console.log(request);
+            console.log(request.cookies);
         });
+        // ws.on('keydown', (data) => {
+        //     console.log(data);
+        // });
     });
 
     wsServer.game = new Game(port, sendData);
@@ -78,26 +105,28 @@ exports.newServer = function() {
     return port;
 }
 
-exports.getGame = function(gamePort, playerName) {
+exports.getGame = function(gamePort, playerName, cookieKey) {
     console.log("Get-game: " + gamePort + " | " + playerName);
     
     for(let i = 0; i < servers.length; i++) {
         let server = servers[i];
-        console.log(server);
+        // console.log(server);
         
         if (gamePort == server.game.port) {
             let game = this.servers[i]['game'];
-            console.log(game);
+            // console.log(game);
             
-            if (game.players.find(player => player.name === playerName) !== undefined) {
+            let playerKey = encryptName(playerName, cookieKey);
+            // if (game.players.find(player => player.name === playerName) !== undefined) {
+            if (game.getPlayer(playerKey) !== null) {
                 let error = "The name is already in use. Please select another name";
                 return { error };
             } else if (game.players.length >= 4) {
                 let error = "The game is full. No more players allowed";
                 return { error };
             }
-            
-            return {game, playerKey: playerName};
+
+            return {game, playerKey};
         }
     } 
     return null;
@@ -127,4 +156,18 @@ let getMaxPort = () => {
         }
     }
     return port; 
+}
+
+let encryptName = (name, key) => {
+    let encryptKey = key.toString();
+    let playerKey = '';
+    for (let i = 0; i < encryptKey.length; i += 3) {
+        let charIndex = i % name.length;
+        let characterKey = name.charCodeAt(charIndex);
+        let encryptKeyPart = encryptKey.charAt(i) + encryptKey.charAt(i + 1) + encryptKey.charAt(i + 2);
+        let diff = encryptKeyPart - characterKey
+        playerKey += Math.abs(diff);
+    }
+    
+    return playerKey;
 }
