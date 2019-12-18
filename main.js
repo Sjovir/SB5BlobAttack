@@ -28,5 +28,6 @@ app.get('/get-servers', (req, res) => {
 });
 
 app.listen(port, () => {
+    wsServer.setup(app);
     console.log(`Listening on port: ${port}`);
 });

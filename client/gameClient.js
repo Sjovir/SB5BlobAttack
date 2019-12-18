@@ -23,7 +23,7 @@ let initializeWebSocket = function(response) {
 
     playerKey = response["playerKey"];
 
-    console.log(playerKey);
+    // console.log(playerKey);
     if (playerKey !== "" && playerKey !== undefined) {
         document.getElementById("errmsg").innerHTML = "";
         setupWebSocket(playerKey);
@@ -36,7 +36,7 @@ let initializeWebSocket = function(response) {
 let setupWebSocket = (playerKey) => {
     let url = document.getElementById("inputUrl").value;
     let port = document.getElementById("inputID").value;
-    ws = new WebSocket("ws://" + url + ":" + port);
+    ws = new WebSocket("wss://" + url + ":" + port);
         ws.onopen = () => {
             ws.send(JSON.stringify({ playerKey }));
             connected = true;
@@ -109,7 +109,7 @@ let createCanvas = () => {
     canvas.clear = () => {
         canvas.context.clearRect(0, 0, canvas.width, canvas.height); // clear canvas in order to update current posisitons
     };
-    console.log(canvas);
+    // console.log(canvas);
 };
 
 let updateCanvas = playerData => {

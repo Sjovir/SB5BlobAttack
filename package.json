@@ -1,11 +1,13 @@
 {
   "name": "blob_attack",
   "version": "1.0.0",
-  "description": "A game where blobs form lines tries to fill out the canvas",
+  "description": "A secure game where blobs form lines tries to fill out the canvas",
   "main": "main.js",
   "dependencies": {
     "express": "^4.17.1",
-    "ws": "^7.1.2"
+    "ws": "^7.1.2",
+    "html-entities": "^1.2.1",
+    "websocket": "1.0.31"
   },
   "devDependencies": {},
   "scripts": {
@@ -13,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AndersBensen/SB5TecProjectE19.git"
+    "url": "git+https://github.com/Sjovir/SB5BlobAttack.git"
   },
   "keywords": [
     "Game",
@@ -23,7 +25,7 @@
   "author": "Anders, Loc & Erik",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/AndersBensen/SB5TecProjectE19/issues"
+    "url": "https://github.com/Sjovir/SB5BlobAttack/issues"
   },
-  "homepage": "https://github.com/AndersBensen/SB5TecProjectE19#readme"
+  "homepage": "https://github.com/Sjovir/SB5BlobAttack#readme"
 }
