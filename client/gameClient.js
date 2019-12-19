@@ -36,7 +36,9 @@ let initializeWebSocket = function(name, response) {
 let setupWebSocket = (name, playerKey) => {
     let url = document.getElementById("inputUrl").value;
     let port = document.getElementById("inputID").value;
-    ws = new WebSocket("wss://" + url + ":" + port);
+    console.log(url + port + name);
+    
+    ws = new WebSocket("wss://" + url + ":" + port + '/?name=' + name);
         ws.onopen = () => {
             ws.send(JSON.stringify({ name, playerKey }));
             connected = true;
@@ -58,6 +60,8 @@ let setupWebSocket = (name, playerKey) => {
             } else if (msg.type === "END") {
                 let winner = msg.winner
                 console.log(winner.name + " has won the game");
+            } else if (msg.type === "CLEAR") {
+                canvas.clear();
             } else
                 console.log("Invalid message received");
         };
@@ -106,9 +110,9 @@ let createCanvas = () => {
     canvas.context.shadowColor = "black";
     document.body.insertBefore(canvas, document.getElementById("empty"));
 
-    // canvas.clear = () => {
-    //     canvas.context.clearRect(0, 0, canvas.width, canvas.height); // clear canvas in order to update current posisitons
-    // };
+    canvas.clear = () => {
+        canvas.context.clearRect(0, 0, canvas.width, canvas.height); // clear canvas in order to update current posisitons
+    };
     // console.log(canvas);
 };
 

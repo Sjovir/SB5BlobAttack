@@ -10,18 +10,22 @@ exports.Game = class Game {
     constructor (port, _sendDataMethod) {
         this.port = port;
         this.sendDataMethod = _sendDataMethod;
-        this.sendDataMethod;
+        this.keys = []
         this.newRound();
     }
 
     start () {
         if (this.started)
             return;
-        
+
         setInterval(this.update.bind(this), 1000 / FRAME_RATE);
         this.started = true;
 
         console.log("Game startet on port " + this.port);
+    }
+
+    addKey (playerKey) {
+        this.keys.push(playerKey);
     }
 
     addPlayer (name, playerKey) {
@@ -48,7 +52,7 @@ exports.Game = class Game {
     }
 
     playerPressKey (playerKey, key) {
-        let player = getPlayer(playerKey);
+        let player = this.getPlayer(playerKey);
         
         if (key === "SPACE") {
             if (this.winner === undefined)
@@ -94,6 +98,8 @@ exports.Game = class Game {
     }
 
     newRound (previousPlayers) {
+        this.sendDataMethod(this.port, {type: "CLEAR"});
+
         this.started = false;
         this.winner = undefined;
         this.players = [];
@@ -101,7 +107,7 @@ exports.Game = class Game {
         if (previousPlayers !== undefined)
         {
             previousPlayers.forEach( player => {
-                this.addPlayer(player.name);
+                this.addPlayer(player.name, player.playerKey);
             });
         }
 

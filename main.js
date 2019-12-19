@@ -8,7 +8,6 @@ const {readFileSync} = require('fs');
 const {createServer} = require('https');
 
 const port = 8000; 
-exports.COOKIE_NAME = COOKIE_NAME = 'BlobAttackCookie';
 
 // need cookieParser middleware before we can do anything with cookies
 app.use(cookieParser());
@@ -16,19 +15,19 @@ app.use(cookieParser());
 // set a cookie
 app.use(function (req, res, next) {
     // check if client sent cookie
-    var cookie = req.cookies[COOKIE_NAME];
+    var cookie = req.cookies[wsServer.COOKIE_NAME];
     if (cookie === undefined)
     {
         // no: set a new cookie
         var randomNumber=Math.random().toString();
         randomNumber=randomNumber.substring(2, randomNumber.length);
-        res.cookie(COOKIE_NAME, randomNumber, { maxAge: 900000, httpOnly: true, secure: true });
-        console.log('cookie created successfully');
+        res.cookie(wsServer.COOKIE_NAME, randomNumber, { maxAge: 900000, httpOnly: true, secure: true });
+        // console.log('cookie created successfully');
     } 
     else
     {
         // yes, cookie was already present 
-        console.log('cookie exists', cookie);
+        // console.log('cookie exists', cookie);
     } 
     next();
 });
@@ -46,7 +45,7 @@ app.get('/new-server', (req, res) => {
 });
 
 app.get('/get-game', (req, res) => {
-    let arr = wsServer.getGame(req.query.port, req.query.name, req.cookies[COOKIE_NAME]);
+    let arr = wsServer.getGame(req.query.port, req.query.name, req.cookies[wsServer.COOKIE_NAME]);
     res.json({gameInfo: arr});
 });
 
@@ -61,6 +60,5 @@ let httpsServer = createServer({
     }, app);
 
     httpsServer.listen(port, () => {
-        wsServer.setup(app);
         console.log(`Listening on port: ${port}`);
     });

@@ -1,7 +1,9 @@
 const {Server} = require('ws');
-const {Game} = require('./game.js');
 const {readFileSync} = require('fs');
 const {createServer} = require('https');
+const url = require('url')
+
+const {Game} = require('./game.js');
 
 const Entities = require('html-entities').Html5Entities
 const entities = new Entities();
@@ -9,7 +11,7 @@ const entities = new Entities();
 var exports = module.exports = {};
 exports.servers = servers = [];
 
-let app = null;
+exports.COOKIE_NAME = COOKIE_NAME = 'BlobAttackCookie';
 
 let clientUpdate = (wsServer, data) => {
     data = JSON.parse(data);
@@ -31,14 +33,10 @@ let clientUpdate = (wsServer, data) => {
 let sendData = (gamePort, gameData) => {
     for(let i = 0; i < servers.length; i++) {
         let server = servers[i];
-        if (gamePort === server["options"]["port"]) {
+        if (gamePort === server.game.port) {
             server.clients.forEach(c => c.send(JSON.stringify(gameData)));
         }
     }
-}
-
-exports.setup = function(expressApp) {
-    app = expressApp;
 }
 
 exports.newServer = function() {
@@ -47,56 +45,60 @@ exports.newServer = function() {
         console.log("No more ports, unable to make new server.");
         return; 
     }
+
+    let newGame = new Game(port, sendData);
     
     let httpsServer = createServer({
         key: readFileSync('./ssl/private.key'),
         cert: readFileSync('./ssl/public.cert')
-    }, app);
+    });
 
-    var webSockOpts=
-    {port         :port
-    ,verifyClient : function (info, callback) {
-        var question=null//url.parse(info.req.url, true, true);
-        let origin = info.origin
-        console.log(info);
+    let verifyClient = function (info, callback) {
+        let origin = info.origin;
+        let request = info.req;
+        let cookies = request.rawHeaders.find(entry => entry.includes(COOKIE_NAME));
+        let cookie = cookies.split(';').find(entry => entry.includes(COOKIE_NAME));
+        let cookieKey = cookie.split('=').pop();
+        // console.log(request);
         
-        if (origin === "https://localhost:8000") {
-           status= true; // I'm happy
-           code  = 400;  // everything OK
-           msg   = '';   // nothing to add
-        } else {
-           status= false; // I'm noy happy
-           code  = 404;  //  key is invalid
-           msg   = 'Unauthorized cookie key';
+        let playerName = '';
+        let urlString = url.parse(request.url);
+        let query = urlString.query;
+        if (query !== null) {
+            let playerNameQuery = query.split('&').find(entry => entry.includes('name'));
+            let playerName = playerNameQuery.split('=').pop();
+            console.log(query);
         }
-        callback (status,code,msg);
-      }
-    };
-    // let wsServer = new Server(webSockOpts);
-    // let wsServer = new Server({port: port});
-    let wsServer = new Server({ server: httpsServer});
-    // var WebSocketServer = require('websocket').server;
-    // let wsServer = new WebSocketServer({ httpServer: httpsServer });
+        
+        let playerKey = encryptName(playerName, cookieKey);
+        console.log(playerKey);
+        console.log(newGame.players);
+        
+        
+        console.log('Verify Client: ' + cookieKey);
+        // console.log(info);
+        
+        if (origin === "https://localhost:8000" && newGame.keys.includes(cookieKey) && newGame.getPlayer(playerKey) === null) {
+           status= true; // Verified
+        } else {
+           status= false; // Not Verified
+        }
+        callback (status);
+    }
+
+    let wsServer = new Server({ server: httpsServer, verifyClient});
+    
     servers.push(wsServer);
 
     wsServer.on('connection', (ws) => {
-        // console.log(ws);
-        
         ws.on('close', () => console.log('Closing connection..'));
 
         ws.on('message', (data) => {
             clientUpdate(wsServer, data);
         });
-        ws.on('request', (request) => {
-            console.log(request);
-            console.log(request.cookies);
-        });
-        // ws.on('keydown', (data) => {
-        //     console.log(data);
-        // });
     });
 
-    wsServer.game = new Game(port, sendData);
+    wsServer.game = newGame;
     
     httpsServer.listen(port);
 
@@ -106,8 +108,6 @@ exports.newServer = function() {
 }
 
 exports.getGame = function(gamePort, playerName, cookieKey) {
-    console.log("Get-game: " + gamePort + " | " + playerName);
-    
     for(let i = 0; i < servers.length; i++) {
         let server = servers[i];
         // console.log(server);
@@ -125,7 +125,8 @@ exports.getGame = function(gamePort, playerName, cookieKey) {
                 let error = "The game is full. No more players allowed";
                 return { error };
             }
-
+            
+            game.addKey(playerKey);
             return {game, playerKey};
         }
     } 
@@ -167,6 +168,8 @@ let encryptName = (name, key) => {
         let encryptKeyPart = encryptKey.charAt(i) + encryptKey.charAt(i + 1) + encryptKey.charAt(i + 2);
         let diff = encryptKeyPart - characterKey
         playerKey += Math.abs(diff);
+        console.log(playerKey + ' diff:' + diff);
+        
     }
     
     return playerKey;
