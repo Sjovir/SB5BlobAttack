@@ -15,11 +15,9 @@ exports.COOKIE_NAME = COOKIE_NAME = 'BlobAttackCookie';
 
 let clientUpdate = (wsServer, data) => {
     data = JSON.parse(data);
-    // console.log(data);
     if (data.playerKey !== undefined) {
         let name = entities.encode(data.name);
         let playerKey = data.playerKey;
-        // console.log(name);
         if (data.keydown !== undefined) {
             wsServer.game.playerPressKey(playerKey, data.keydown);
         } else if(data.keyup !== undefined) {
@@ -104,14 +102,11 @@ exports.newServer = function() {
 exports.getGame = function(gamePort, playerName, cookieKey) {
     for(let i = 0; i < servers.length; i++) {
         let server = servers[i];
-        // console.log(server);
         
         if (gamePort == server.game.port) {
             let game = this.servers[i]['game'];
-            // console.log(game);
-            
             let playerKey = encryptName(playerName, cookieKey);
-            // if (game.players.find(player => player.name === playerName) !== undefined) {
+
             if (game.getPlayer(playerKey) !== null) {
                 let error = "The name is already in use. Please select another name";
                 return { error };
@@ -162,7 +157,6 @@ let encryptName = (name, key) => {
         let encryptKeyPart = encryptKey.charAt(i) + encryptKey.charAt(i + 1) + encryptKey.charAt(i + 2);
         let diff = encryptKeyPart - characterKey
         playerKey += Math.abs(diff);
-        console.log(playerKey + ' diff:' + diff);
     }
     
     return playerKey + name;

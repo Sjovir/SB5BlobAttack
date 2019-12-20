@@ -21,7 +21,7 @@ app.use(function (req, res, next) {
         // no: set a new cookie
         var randomNumber=Math.random().toString();
         randomNumber=randomNumber.substring(2, randomNumber.length);
-        res.cookie(wsServer.COOKIE_NAME, randomNumber, { maxAge: 900000, httpOnly: true, secure: true });
+        res.cookie(wsServer.COOKIE_NAME, randomNumber, { maxAge: 900000, httpOnly: true });
         // console.log('cookie created successfully');
     } 
     else
@@ -41,7 +41,6 @@ app.get('/', (req, res) => {
 app.get('/new-server', (req, res) => {
     let serverPort = wsServer.newServer();
     res.json({port: serverPort});
-    // res.redirect("/");
 });
 
 app.get('/get-game', (req, res) => {

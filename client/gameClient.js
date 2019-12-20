@@ -11,8 +11,6 @@ let establishConnection = function() {
 };
 
 let initializeWebSocket = function(name, response) {
-    // console.log(response);
-
     if (response === null)
         return;
 
@@ -67,7 +65,6 @@ let setupWebSocket = (name, playerKey) => {
 
 document.onkeydown = event => {
     if (!connected) return;
-    // console.log(playerKey + " || " + event.key);
 
     switch (event.key) {
         case "ArrowLeft":
@@ -80,7 +77,6 @@ document.onkeydown = event => {
             ws.send(JSON.stringify({ playerKey, keydown: "SPACE" }));
             break;
         default:
-        // console.log("Not a valid key");
     }
 };
 
@@ -95,7 +91,6 @@ document.onkeyup = event => {
             ws.send(JSON.stringify({ playerKey, keyup: "RIGHT" }));
             break;
         default:
-        // console.log("Not a valid key");
     }
 };
 
@@ -111,25 +106,16 @@ let createCanvas = () => {
     canvas.clear = () => {
         canvas.context.clearRect(0, 0, canvas.width, canvas.height); // clear canvas in order to update current posisitons
     };
-    // console.log(canvas);
 };
 
 let updateCanvas = playerData => {
-    // canvas.clear();
-
     playerData.forEach(player => {
         let ctx = canvas.context;
-        // let points = player.positions;
         ctx.fillStyle = player.color;
 
         ctx.beginPath();
         ctx.arc(player.x, player.y, player.size / 2, 0, 2 * Math.PI);
         ctx.fill();
-        // points.forEach(point => {
-        // ctx.beginPath();
-        // ctx.arc(point.x, point.y, player.size / 2, 0, 2 * Math.PI);
-        // ctx.fill();
-        // });
     });
 };
 
