@@ -55,30 +55,24 @@ exports.newServer = function() {
 
     let verifyClient = function (info, callback) {
         let origin = info.origin;
+
         let request = info.req;
         let cookies = request.rawHeaders.find(entry => entry.includes(COOKIE_NAME));
         let cookie = cookies.split(';').find(entry => entry.includes(COOKIE_NAME));
         let cookieKey = cookie.split('=').pop();
-        // console.log(request);
         
         let playerName = '';
         let urlString = url.parse(request.url);
         let query = urlString.query;
         if (query !== null) {
             let playerNameQuery = query.split('&').find(entry => entry.includes('name'));
-            let playerName = playerNameQuery.split('=').pop();
-            console.log(query);
+            playerName = playerNameQuery.split('=').pop();
         }
-        
         let playerKey = encryptName(playerName, cookieKey);
-        console.log(playerKey);
-        console.log(newGame.players);
-        
         
         console.log('Verify Client: ' + cookieKey);
-        // console.log(info);
         
-        if (origin === "https://localhost:8000" && newGame.keys.includes(cookieKey) && newGame.getPlayer(playerKey) === null) {
+        if (origin === "https://localhost:8000" && newGame.keys.includes(playerKey) && newGame.getPlayer(playerKey) === null) {
            status= true; // Verified
         } else {
            status= false; // Not Verified
@@ -169,8 +163,7 @@ let encryptName = (name, key) => {
         let diff = encryptKeyPart - characterKey
         playerKey += Math.abs(diff);
         console.log(playerKey + ' diff:' + diff);
-        
     }
     
-    return playerKey;
+    return playerKey + name;
 }

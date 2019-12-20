@@ -23,7 +23,6 @@ let initializeWebSocket = function(name, response) {
 
     playerKey = response["playerKey"];
 
-    // console.log(playerKey);
     if (playerKey !== "" && playerKey !== undefined) {
         document.getElementById("errmsg").innerHTML = "";
         setupWebSocket(name, playerKey);
@@ -36,7 +35,6 @@ let initializeWebSocket = function(name, response) {
 let setupWebSocket = (name, playerKey) => {
     let url = document.getElementById("inputUrl").value;
     let port = document.getElementById("inputID").value;
-    console.log(url + port + name);
     
     ws = new WebSocket("wss://" + url + ":" + port + '/?name=' + name);
         ws.onopen = () => {
