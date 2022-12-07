@@ -4,7 +4,7 @@
   "description": "A secure game where blobs form lines tries to fill out the canvas",
   "main": "main.js",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "ws": "^7.1.2",
     "html-entities": "^1.2.1",
     "cookie-parser": "1.4.4"
